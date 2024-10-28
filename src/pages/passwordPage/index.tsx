@@ -1,7 +1,9 @@
 import { Button } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useState } from 'react';
-const PasswordPage = () => {
+import PasswordPost from '../../components/passwordPost';
+const PasswordPage = () =>
+{
     const [showCreate, setShowCreate] = useState(false);
     return (
         <>
@@ -13,7 +15,7 @@ const PasswordPage = () => {
                     <Button variant='contained' fullWidth onClick={() => setShowCreate(true)}>新建</Button>
                 </Grid>
             </Grid>
-            {showCreate && <div>222</div>}
+            <PasswordPost open={showCreate} onClose={() => setShowCreate(false)} isEdit={false} />
         </>
     )
 }
