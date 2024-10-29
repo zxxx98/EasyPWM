@@ -5,6 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { FormContainer, TextFieldElement } from 'react-hook-form-mui'
 import { MouseEvent, useState } from "react";
+import { generate } from 'generate-password-browser';
 
 const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) =>
 {
