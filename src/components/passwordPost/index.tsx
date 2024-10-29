@@ -1,21 +1,19 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, IconButton, Slider, TextField } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { FormContainer, TextFieldElement } from 'react-hook-form-mui'
+import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui'
 import { MouseEvent, useState } from "react";
 import { generate } from 'generate-password-browser';
 
 const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) =>
 {
+    const formContext = useForm();
     const [passwordGenerate, setPasswordGenerate] = useState({
         needUpperCaseAndLowerCase: true,
         needSpecialChar: true,
         needNumbers: true,
         length: 12
     });
-    const [showPassword, setShowPassword] = useState(false);
     const generatePassword = (e: MouseEvent<HTMLButtonElement>) =>
     {
         e.preventDefault();
@@ -31,10 +29,8 @@ const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () =>
             });
         }
         const password = generate(passwordConfig);
-        const input = e.currentTarget.parentElement?.querySelector('input');
-        if (input) {
-            input.value = password;
-        }
+        //设置表单的数据
+        formContext.setValue('password', password);
     }
     return <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>{isEdit ? "编辑密码" : "新建密码"}</DialogTitle>
@@ -51,6 +47,7 @@ const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () =>
             <CloseIcon />
         </IconButton>
         <FormContainer
+            formContext={formContext}
             onSuccess={data => console.log(data)}
         >
             <DialogContent>
@@ -73,20 +70,15 @@ const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () =>
                         required
                         id="password"
                         name="password"
-                        type={showPassword ? 'text' : 'password'}
+                        type={'text'}
                         fullWidth
                         variant="outlined"
                         slotProps={{
                             input: {
-                                endAdornment: <>
-                                    <IconButton onClick={() => setShowPassword(!showPassword)}>
-                                        {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                                    </IconButton>
-                                    <IconButton onClick={(e) =>
-                                    {
-                                        generatePassword(e);
-                                    }}><RefreshIcon /></IconButton>
-                                </>
+                                endAdornment: <IconButton onClick={(e) =>
+                                {
+                                    generatePassword(e);
+                                }}><RefreshIcon /></IconButton>
                             }
                         }}
                     />
