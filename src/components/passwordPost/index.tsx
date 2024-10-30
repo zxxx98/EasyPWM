@@ -1,11 +1,15 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, IconButton, Slider, TextField } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui'
-import { MouseEvent, useState } from "react";
+import { FieldValues, FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui'
+import { MouseEvent, useEffect, useState } from "react";
 import { generate } from 'generate-password-browser';
+import { IPassword } from '../../interfaces';
+import { nanoid } from 'nanoid';
+import { addPassword, updatePassword } from "../../utils/net";
+import message from "../message";
 
-const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () => void, isEdit: boolean }) =>
+const PasswordPost = ({ open, onClose, isEdit, data }: { open: boolean, onClose: () => void, isEdit: boolean, data?: IPassword }) =>
 {
     const formContext = useForm();
     const [passwordGenerate, setPasswordGenerate] = useState({
@@ -32,6 +36,37 @@ const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () =>
         //设置表单的数据
         formContext.setValue('password', password);
     }
+
+    const onSubmit = async (formData: FieldValues) =>
+    {
+        const password: IPassword = {
+            id: isEdit ? data!.id : nanoid(),
+            userName: formData.username,
+            password: formData.password,
+            domain: formData.domain,
+            remark: formData.remark,
+            config: passwordGenerate
+        };
+        const result = isEdit ? await updatePassword(password) : await addPassword(password);
+        if (result) {
+            message.success(`${isEdit ? "编辑" : "添加"}成功`);
+            onClose();
+        } else {
+            message.error(`${isEdit ? "编辑" : "添加"}失败`);
+        }
+    }
+
+    useEffect(() =>
+    {
+        if (data) {
+            formContext.setValue('username', data.userName);
+            formContext.setValue('password', data.password);
+            formContext.setValue('domain', data.domain);
+            formContext.setValue('remark', data.remark);
+            setPasswordGenerate(data.config);
+        }
+    }, [data]);
+
     return <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>{isEdit ? "编辑密码" : "新建密码"}</DialogTitle>
         <IconButton
@@ -48,7 +83,10 @@ const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () =>
         </IconButton>
         <FormContainer
             formContext={formContext}
-            onSuccess={data => console.log(data)}
+            onSuccess={data =>
+            {
+                onSubmit(data);
+            }}
         >
             <DialogContent>
                 <div style={{ marginBottom: '16px' }}>
@@ -93,12 +131,22 @@ const PasswordPost = ({ open, onClose, isEdit }: { open: boolean, onClose: () =>
                     </div>
                 </div>
                 <div style={{ marginBottom: '16px' }}>
-                    <div style={{ marginBottom: '8px' }}>网址</div>
+                    <div style={{ marginBottom: '8px' }}>域</div>
                     <TextFieldElement
-                        placeholder="https://xxxxxx"
-                        id="url"
-                        name="url"
+                        placeholder="https://xxxxxx Or DomainName"
+                        id="domain"
+                        name="domain"
                         type="url"
+                        fullWidth
+                        variant="outlined"
+                    />
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                    <div style={{ marginBottom: '8px' }}>备注</div>
+                    <TextFieldElement
+                        id="remark"
+                        name="remark"
+                        type="text"
                         fullWidth
                         variant="outlined"
                     />

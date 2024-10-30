@@ -26,8 +26,8 @@ export class AppController
   }
 
   @Post("/delete")
-  delete(@Body() id: string): Promise<boolean>
+  delete(@Body() deleteData: { id: string }): Promise<boolean>
   {
-    return this.appService.delete(id);
+    return this.appService.delete(deleteData.id);
   }
 }

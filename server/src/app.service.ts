@@ -7,13 +7,9 @@ import { readJSONFile, writeJSONFile } from './utils/json';
 export class AppService implements IDataBase
 {
 
-  private _passwords?: IPassword[];
   private async getPasswords(): Promise<IPassword[]>
   {
-    if (!this._passwords) {
-      this._passwords = await readJSONFile();
-    }
-    return this._passwords;
+    return await readJSONFile();
   }
 
   async getAll(): Promise<IPassword[]>
