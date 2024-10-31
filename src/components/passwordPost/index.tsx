@@ -133,17 +133,20 @@ const PasswordPost = ({ open, onClose, isEdit, data }: { open: boolean, onClose:
                 <div style={{ marginBottom: '16px' }}>
                     <div style={{ marginBottom: '8px' }}>域</div>
                     <TextFieldElement
-                        placeholder="https://xxxxxx Or DomainName"
+                        placeholder="https://xxxxxx"
                         id="domain"
                         name="domain"
                         type="url"
                         fullWidth
                         variant="outlined"
+
                     />
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                     <div style={{ marginBottom: '8px' }}>备注</div>
                     <TextFieldElement
+                        multiline
+                        rows={4}
                         id="remark"
                         name="remark"
                         type="text"
