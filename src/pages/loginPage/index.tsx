@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Container,
@@ -9,38 +9,51 @@ import {
     FormControlLabel,
     Typography,
 } from '@mui/material';
-import { writeLocalStorage } from '../../utils/localStorage';
+import { readLocalStorage, writeLocalStorage } from '../../utils/localStorage';
 import { useNavigate } from 'react-router-dom';
 import message from '../../components/message';
+import { login } from '../../utils/net';
+import { IUser } from '../../interfaces';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         try {
             // 这里添加你的登录 API 调用
-            // const response = await loginApi(username, password);
-
-            // 假设登录成功，保存 token
-            const token = 'your-token-here';
-            writeLocalStorage('token', token);
-
-            // 如果记住密码，可以保存相关信息
-            if (rememberMe) {
-                writeLocalStorage('rememberedInfo', { username, password }, JSON.stringify);
+            const user: IUser = await login(username, password);
+            if (user) {
+                // 假设登录成功，保存 token, token是用户信息里面最后一个
+                const token = user.tokens[user.tokens.length - 1];
+                writeLocalStorage('token', token);
+                // 如果记住密码，可以保存相关信息
+                if (rememberMe) {
+                    writeLocalStorage('rememberedInfo', { username, password }, JSON.stringify);
+                }
+                // 登录成功后跳转到首页
+                navigate('/');
+            } else {
+                message.error('密码错误');
             }
-
-            // 登录成功后跳转到首页
-            navigate('/');
         } catch (error) {
+            // 处理登录错误
             console.error('登录失败:', error);
             message.error('登录失败');
-            // 处理登录错误
         }
     };
+
+    useEffect(() => {
+        //读取本地记住的用户名和密码
+        const rememberedInfo = readLocalStorage('rememberedInfo', JSON.parse);
+        if (rememberedInfo) {
+            setUsername(rememberedInfo.username);
+            setPassword(rememberedInfo.password);
+            setRememberMe(true);
+        }
+    }, []);
 
     return (
         <Container component="main" maxWidth="xs">

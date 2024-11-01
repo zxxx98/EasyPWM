@@ -7,12 +7,13 @@ import App from './App';
 import { readLocalStorage } from './utils/localStorage';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/loginPage';
+import { getUserByToken, login } from './utils/net';
 
 // 路由守卫组件
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const token = readLocalStorage('token', String); // 或者从其他存储位置获取token
-
-  if (!token) {
+  const user = token ? getUserByToken(token) : undefined;
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 

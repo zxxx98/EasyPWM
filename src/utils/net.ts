@@ -35,3 +35,25 @@ export const deletePassword = async (id: string) =>
     const res = await axios.post('http://localhost:3000/delete', { id });
     return res.data;
 }
+
+export const getUsers = async () =>
+{
+    const res = await axios.get('http://localhost:3000/user/getUsers');
+    return res.data;
+}
+
+export const login = async (name: string, password: string) =>
+{
+    const res = await axios.post('http://localhost:3000/user/getUser', {
+        name,password
+    });
+    return res.data;
+}
+
+export const getUserByToken = async (token: string) =>
+{
+    const res = await axios.post('http://localhost:3000/user/getUserByToken', {
+        token
+    });
+    return res.data;
+}

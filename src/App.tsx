@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { Tab, Tabs } from '@mui/material';
 import { Children, ReactNode, useState } from 'react';
 import PasswordPage from './pages/passwordPage';
+import UserManagementPage from './pages/userManagementPage';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -26,7 +27,7 @@ const TabConfigs: {
       label: '用户',
       value: 1,
       icon: "",
-      component: <div>456</div>
+      component: <UserManagementPage></UserManagementPage>
     },
     {
       label: '配置',

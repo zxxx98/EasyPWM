@@ -25,6 +25,7 @@ export interface IPassword
 export interface IUserAPI {
     getUser(name: string): Promise<IUser | undefined>;
     getUsers(): Promise<IUser[]>;
+    login(name: string, password: string): Promise<IUser | undefined>;
     getUserByToken(token: string): Promise<IUser | undefined>;
     addUser(user: IUser): Promise<boolean>;
     updateUser(user: IUser): Promise<boolean>;

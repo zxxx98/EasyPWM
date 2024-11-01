@@ -13,3 +13,16 @@ export interface IPassword
         length: number
     }
 }
+
+export interface IUser {
+    id: string;
+    name: string;
+    password: string;
+    tokens: string[];
+    role: Role;
+}
+
+/**
+ * 角色
+ */
+export type Role = "admin" | "user";
