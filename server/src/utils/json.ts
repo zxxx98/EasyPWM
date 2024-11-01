@@ -17,30 +17,40 @@ DefaultJSONMap.set(Config.userJsonFileName, JSON.stringify([
 
 DefaultJSONMap.set(Config.passwordJsonFileName, JSON.stringify([]))
 
-function getDataFilePath(fileName: string): string {
+function getDataFilePath(fileName: string): string
+{
     const tmpDataDir = path.join(os.tmpdir(), 'easy-password-manager');
     if (!fs.existsSync(tmpDataDir)) {
         fs.mkdirSync(tmpDataDir, { recursive: true });
-        const defaultStr = DefaultJSONMap.get(fileName);
-        fs.writeFileSync(path.join(tmpDataDir, fileName), defaultStr ?? "[]");
     }
-    return path.join(tmpDataDir, fileName);
+    const filePath = path.join(tmpDataDir, fileName);
+    if (!fs.existsSync(filePath)) {
+        const defaultStr = DefaultJSONMap.get(fileName);
+        fs.writeFileSync(filePath, defaultStr ?? "[]");
+    }
+    return filePath;
 }
 
-function readJSONFile<T>(fileName: string): Promise<T[]> {
+function readJSONFile<T>(fileName: string): Promise<T[]>
+{
     const filePath = getDataFilePath(fileName);
-    return new Promise<T[]>((resolve, reject) => {
-        fs.readFile(filePath, "utf-8", (err, data) => {
+    return new Promise<T[]>((resolve, reject) =>
+    {
+        fs.readFile(filePath, "utf-8", (err, data) =>
+        {
             if (err) reject(err);
             resolve(data ? JSON.parse(data) : []);
         });
     });
 }
 
-function writeJSONFile(fileName: string, data: any[]): Promise<boolean> {
+function writeJSONFile(fileName: string, data: any[]): Promise<boolean>
+{
     const filePath = getDataFilePath(fileName);
-    return new Promise<boolean>((resolve, reject) => {
-        fs.writeFile(filePath, JSON.stringify(data), { flag: 'w' }, (err) => {
+    return new Promise<boolean>((resolve, reject) =>
+    {
+        fs.writeFile(filePath, JSON.stringify(data), { flag: 'w' }, (err) =>
+        {
             if (err) {
                 resolve(false);
             } else {

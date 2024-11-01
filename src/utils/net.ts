@@ -42,13 +42,22 @@ export const getUsers = async () =>
     return res.data;
 }
 
-export const login = async (name: string, password: string) =>
+export const getUser = async (name: string) =>
 {
-    const res = await axios.post('http://localhost:3000/user/getUser', {
-        name,password
+    const res = await axios.get('http://localhost:3000/user/getUser', {
+        params: { name }
     });
     return res.data;
 }
+
+export const login = async (name: string, password: string) =>
+{
+    const res = await axios.post('http://localhost:3000/user/login', {
+        name, password
+    });
+    return res.data;
+}
+
 
 export const getUserByToken = async (token: string) =>
 {

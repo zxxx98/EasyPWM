@@ -45,6 +45,7 @@ const PasswordPost = ({ open, onClose, isEdit, data }: { open: boolean, onClose:
             password: formData.password,
             domain: formData.domain,
             remark: formData.remark,
+            visibility: "private",
             config: passwordGenerate
         };
         const result = isEdit ? await updatePassword(password) : await addPassword(password);

@@ -11,7 +11,7 @@ export interface IPassword
     id: string,
     userName: string,
     password: string,
-    visibility : "public" | "private",
+    visibility: "public" | "private",
     domain?: string,
     remark?: string,
     config: {
@@ -22,7 +22,8 @@ export interface IPassword
     }
 }
 
-export interface IUserAPI {
+export interface IUserAPI
+{
     getUser(name: string): Promise<IUser | undefined>;
     getUsers(): Promise<IUser[]>;
     login(name: string, password: string): Promise<IUser | undefined>;
@@ -32,12 +33,20 @@ export interface IUserAPI {
     deleteUser(id: string): Promise<boolean>;
 }
 
-export interface IUser {
+export interface IUser
+{
     id: string;
     name: string;
     password: string;
-    tokens: string[];
+    tokens: IToken[];
     role: Role;
+}
+
+export interface IToken
+{
+    token: string;
+    createTime: number;
+    deleteTime: number;
 }
 
 /**

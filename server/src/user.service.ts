@@ -1,43 +1,70 @@
 import { Injectable } from '@nestjs/common';
-import { IUser, IUserAPI } from './interfaces';
+import { IToken, IUser, IUserAPI } from './interfaces';
 import { readJSONFile, writeJSONFile } from './utils/json';
 import { Config } from './config';
-const nanoid = async (size:number) => {
-  const module = await import('nanoid');
-  return module.nanoid(size);
-};
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class UserService implements IUserAPI {
+export class UserService implements IUserAPI
+{
 
-  async getUsers(): Promise<IUser[]> {
+  async getUsers(): Promise<IUser[]>
+  {
     return await readJSONFile(Config.userJsonFileName);
   }
 
-  async getUser(name: string): Promise<IUser | undefined> {
+  async getUser(name: string): Promise<IUser | undefined>
+  {
     const users = await this.getUsers();
     return users.find(u => u.name === name);
   }
 
-  async login(name: string, password: string): Promise<IUser | undefined> {
+  async login(name: string, password: string): Promise<IUser | undefined>
+  {
     let user = await this.getUser(name);
     user = user?.password === password ? user : undefined;
-    if(user)
-    {
+    console.log(user);
+    if (user) {
       //如果登录成功，则添加一条token
-      const token = await nanoid(16);
-      user.tokens.push(token);
+      const token = await uuidv4();
+      const now = Date.now();
+      //默认一周之后删除
+      user.tokens.push({
+        token,
+        createTime: now,
+        deleteTime: now + 7 * 24 * 60 * 60 * 1000
+      });
       await this.updateUser(user);
     }
     return user;
   }
 
-  async getUserByToken(token: string): Promise<IUser | undefined> {
+  async getUserByToken(token: string): Promise<IUser | undefined>
+  {
     const users = await this.getUsers();
-    return users.find(u => u.tokens.find(t => t === token));
+    let tokenInfo: IToken | undefined;
+    const user = users.find(u =>
+    {
+      const temp = u.tokens.find(t => t.token === token);
+      if (temp) tokenInfo = temp;
+      return temp;
+    });
+    if (user) {
+      //如果不在有效期内，则删除
+      if (tokenInfo && tokenInfo.deleteTime < Date.now()) {
+        //刷新当前tokens
+        const newCTokens = user.tokens.filter(t => t.deleteTime > Date.now());
+        user.tokens = newCTokens;
+        await this.updateUser(user);
+        return undefined;
+      }
+      return user;
+    }
+    return user;
   }
 
-  async addUser(user: IUser): Promise<boolean> {
+  async addUser(user: IUser): Promise<boolean>
+  {
     const users = await this.getUsers();
     if (users.find(u => u.name === user.name)) return false;
     users.push(user);
@@ -45,7 +72,8 @@ export class UserService implements IUserAPI {
     return result;
   }
 
-  async updateUser(user: IUser): Promise<boolean> {
+  async updateUser(user: IUser): Promise<boolean>
+  {
     const users = await this.getUsers();
     const index = users.findIndex(p => p.id === user.id);
     if (index === -1) return false;
@@ -53,7 +81,8 @@ export class UserService implements IUserAPI {
     return await writeJSONFile(Config.userJsonFileName, users);
   }
 
-  async deleteUser(id: string): Promise<boolean> {
+  async deleteUser(id: string): Promise<boolean>
+  {
     const users = await this.getUsers();
     const index = users.findIndex(p => p.id === id);
     if (index === -1) return false;
