@@ -1,23 +1,21 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Config } from "../config";
-import { IPassword } from "src/interfaces";
 
-function getDataFilePath(): string
+function getDataFilePath(fileName: string): string
 {
     const tmpDataDir = path.join(os.tmpdir(), 'easy-password-manager');
     if (!fs.existsSync(tmpDataDir)) {
         fs.mkdirSync(tmpDataDir, { recursive: true });
-        fs.writeFileSync(path.join(tmpDataDir, Config.jsonFileName), "[]");
+        fs.writeFileSync(path.join(tmpDataDir, fileName), "[]");
     }
-    return path.join(tmpDataDir, Config.jsonFileName);
+    return path.join(tmpDataDir, fileName);
 }
 
-function readJSONFile(): Promise<IPassword[]>
+function readJSONFile<T>(fileName: string): Promise<T[]>
 {
-    const filePath = getDataFilePath();
-    return new Promise<IPassword[]>((resolve, reject) =>
+    const filePath = getDataFilePath(fileName);
+    return new Promise<T[]>((resolve, reject) =>
     {
         fs.readFile(filePath, "utf-8", (err, data) =>
         {
@@ -27,12 +25,12 @@ function readJSONFile(): Promise<IPassword[]>
     });
 }
 
-function writeJSONFile(passwords: IPassword[]): Promise<boolean>
+function writeJSONFile(fileName: string, data: any[]): Promise<boolean>
 {
-    const filePath = getDataFilePath();
+    const filePath = getDataFilePath(fileName);
     return new Promise<boolean>((resolve, reject) =>
     {
-        fs.writeFile(filePath, JSON.stringify(passwords), { flag: 'w' }, (err) =>
+        fs.writeFile(filePath, JSON.stringify(data), { flag: 'w' }, (err) =>
         {
             if (err) {
                 resolve(false);

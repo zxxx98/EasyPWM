@@ -1,3 +1,4 @@
 export const Config = {
-    jsonFileName: "./passwords.json"
+    passwordJsonFileName: "./passwords.json",
+    userJsonFileName: "./users.json",
 }

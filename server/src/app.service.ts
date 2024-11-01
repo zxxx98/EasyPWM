@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { IPassword } from './interfaces';
-import { IDataBase } from './interfaces';
+import { IPasswordAPI } from './interfaces';
 import { readJSONFile, writeJSONFile } from './utils/json';
+import { Config } from './config';
 
 @Injectable()
-export class AppService implements IDataBase
+export class AppService implements IPasswordAPI
 {
 
   private async getPasswords(): Promise<IPassword[]>
   {
-    return await readJSONFile();
+    return await readJSONFile(Config.passwordJsonFileName);
   }
 
   async getAll(): Promise<IPassword[]>
@@ -21,7 +22,7 @@ export class AppService implements IDataBase
   {
     const passwords = await this.getPasswords();
     passwords.push(password);
-    const result = await writeJSONFile(passwords);
+    const result = await writeJSONFile(Config.passwordJsonFileName, passwords);
     return result;
   }
 
@@ -31,7 +32,7 @@ export class AppService implements IDataBase
     const index = passwords.findIndex(p => p.id === password.id);
     if (index === -1) return false;
     passwords[index] = password;
-    return await writeJSONFile(passwords);
+    return await writeJSONFile(Config.passwordJsonFileName, passwords);
   }
 
   async delete(id: string): Promise<boolean>
@@ -40,6 +41,6 @@ export class AppService implements IDataBase
     const index = passwords.findIndex(p => p.id === id);
     if (index === -1) return false;
     passwords.splice(index, 1);
-    return await writeJSONFile(passwords);
+    return await writeJSONFile(Config.passwordJsonFileName, passwords);
   }
 }
