@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IPassword } from "../interfaces";
+import { IPassword, IUser } from "../interfaces";
 
 /**
  * 获取密码列表
@@ -64,5 +64,23 @@ export const getUserByToken = async (token: string) =>
     const res = await axios.post('http://localhost:3000/user/getUserByToken', {
         token
     });
+    return res.data;
+}
+
+export const deleteUser = async (id: string) =>
+{
+    const res = await axios.post('http://localhost:3000/user/delete', { id });
+    return res.data;
+}
+
+export const updateUser = async (user: IUser) =>
+{
+    const res = await axios.post('http://localhost:3000/user/update', user);
+    return res.data;
+}
+
+export const addUser = async (user: IUser) =>
+{
+    const res = await axios.post('http://localhost:3000/user/add', user);
     return res.data;
 }

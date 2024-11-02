@@ -23,7 +23,6 @@ export class UserService implements IUserAPI
   {
     let user = await this.getUser(name);
     user = user?.password === password ? user : undefined;
-    console.log(user);
     if (user) {
       //如果登录成功，则添加一条token
       const token = await uuidv4();
@@ -31,6 +30,7 @@ export class UserService implements IUserAPI
       //默认一周之后删除
       user.tokens.push({
         token,
+        description: 'user login',
         createTime: now,
         deleteTime: now + 7 * 24 * 60 * 60 * 1000
       });

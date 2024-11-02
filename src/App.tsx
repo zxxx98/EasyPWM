@@ -2,11 +2,15 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Tab, Tabs } from '@mui/material';
-import { Children, ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 import PasswordPage from './pages/passwordPage';
+import { CurrentUser } from './main';
+import ConfigPage from './pages/configPage';
 import UserManagementPage from './pages/userManagementPage';
+import ExitPage from './pages/exitPage';
 
-interface TabPanelProps {
+interface TabPanelProps
+{
   children?: React.ReactNode;
   index: number;
 }
@@ -33,17 +37,18 @@ const TabConfigs: {
       label: '配置',
       value: 2,
       icon: "",
-      component: <div>789</div>
+      component: <ConfigPage></ConfigPage>
     },
     {
       label: '退出',
       value: 3,
       icon: "",
-      component: <div>101112</div>
+      component: <ExitPage></ExitPage>
     },
   ]
 
-function TabPanel(props: TabPanelProps) {
+function TabPanel(props: TabPanelProps)
+{
   const { children } = props;
 
   return (
@@ -58,17 +63,19 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: number) {
+function a11yProps(index: number)
+{
   return {
     id: `vertical-tab-${index}`,
     'aria-controls': `vertical-tabpanel-${index}`
   };
 }
 
-export default function App() {
+export default function App()
+{
   const [value, setValue] = useState(0);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: number) =>
+  {
     setValue(newValue);
   };
   return (
@@ -84,7 +91,8 @@ export default function App() {
           aria-label="Vertical tabs example"
           sx={{ borderRight: 1, borderColor: 'divider' }}
         >
-          {TabConfigs.map((tabConfig, index) => {
+          {TabConfigs.map((tabConfig, index) =>
+          {
             return <Tab label={tabConfig.label} {...a11yProps(index)} key={index} />
           })}
         </Tabs>

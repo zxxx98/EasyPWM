@@ -3,7 +3,7 @@ export interface IPassword
     id: string,
     userName: string,
     password: string,
-    visibility : "public" | "private",
+    visibility: "public" | "private",
     domain?: string,
     remark?: string,
     config: {
@@ -14,12 +14,21 @@ export interface IPassword
     }
 }
 
-export interface IUser {
+export interface IUser
+{
     id: string;
     name: string;
     password: string;
-    tokens: string[];
+    tokens: IToken[];
     role: Role;
+}
+
+export interface IToken
+{
+    token: string;
+    description: string;
+    createTime: number;
+    deleteTime: number;
 }
 
 /**

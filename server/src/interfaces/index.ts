@@ -45,6 +45,7 @@ export interface IUser
 export interface IToken
 {
     token: string;
+    description: string;
     createTime: number;
     deleteTime: number;
 }

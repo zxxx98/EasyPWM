@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
+import
+{
     Box,
     Container,
     Paper,
@@ -14,25 +15,29 @@ import { useNavigate } from 'react-router-dom';
 import message from '../../components/message';
 import { login } from '../../utils/net';
 import { IUser } from '../../interfaces';
+import { CurrentUser } from '../../main';
 
-const LoginPage = () => {
+const LoginPage = () =>
+{
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: any) =>
+    {
         e.preventDefault();
         try {
             // 这里添加你的登录 API 调用
             const user: IUser = await login(username, password);
             if (user) {
                 // 假设登录成功，保存 token, token是用户信息里面最后一个
-                const token = user.tokens[user.tokens.length - 1];
-                writeLocalStorage('token', token);
+                const tokenInfo = user.tokens[user.tokens.length - 1];
+                writeLocalStorage('token', tokenInfo.token);
                 // 如果记住密码，可以保存相关信息
                 if (rememberMe) {
                     writeLocalStorage('rememberedInfo', { username, password }, JSON.stringify);
                 }
+                Object.assign(CurrentUser, user);
                 // 登录成功后跳转到首页
                 navigate('/');
             } else {
@@ -45,7 +50,8 @@ const LoginPage = () => {
         }
     };
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         //读取本地记住的用户名和密码
         const rememberedInfo = readLocalStorage('rememberedInfo', JSON.parse);
         if (rememberedInfo) {
