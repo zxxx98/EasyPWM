@@ -1,24 +1,30 @@
 version: '3.8'
 
 services:
-  frontend:
+  webui:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.web
     ports:
       - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3000
     depends_on:
-      - backend
+      - server
 
-  backend:
+  server:
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
+    volumes:
+      - ./server:/app
+      - /app/node_modules
 
 networks:
   default:
-    driver: bridge 
+    driver: bridge
