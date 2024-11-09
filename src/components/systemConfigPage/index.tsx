@@ -1,11 +1,19 @@
-import { Button, Checkbox, FormControlLabel, IconButton } from "@mui/material";
-import { Box, Stack, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from "@mui/material";
+
+import { Box, Button, FormControl, InputLabel, MenuItem, Paper, Select, Typography } from "@mui/material";
+import { useState } from "react";
+import { ISystemConfig, Language } from "../../interfaces";
+import { useUser } from "../../contexts/UserContext";
+import { getPasswordList, updateUser } from "../../utils/net";
+import message from "../message";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import DownloadIcon from '@mui/icons-material/Download';
 import GoogleIcon from '@mui/icons-material/Google';
-import EditIcon from '@mui/icons-material/Edit';
+import { exportPasswordList, importLocalConfig } from "../../utils/file";
 
 const SystemConfigPage = () =>
 {
+    const { user } = useUser();
+    const [systemConfig, setSystemConfig] = useState<ISystemConfig>(user.systemConfig);
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ mb: 3 }}>系统配置</Typography>
@@ -15,43 +23,59 @@ const SystemConfigPage = () =>
                 <FormControl fullWidth>
                     <InputLabel>语言</InputLabel>
                     <Select
-                        value="zh"
+                        value={systemConfig.language}
                         label="语言"
+                        onChange={(e) =>
+                        {
+                            const newSystemConfig = { ...systemConfig };
+                            newSystemConfig.language = e.target.value as Language;
+                            setSystemConfig(newSystemConfig);
+                            const newUser = { ...user };
+                            newUser.systemConfig = newSystemConfig;
+                            updateUser(newUser).then(() =>
+                            {
+                                message.success('保存成功');
+                            });
+                        }}
                     >
                         <MenuItem value="zh">中文</MenuItem>
                         <MenuItem value="en">English</MenuItem>
                     </Select>
                 </FormControl>
-            </Paper>
-
-            <Paper sx={{ p: 2, mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ mb: 2 }}>数据同步</Typography>
-                <Stack spacing={2}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <FormControl sx={{ minWidth: 200 }}>
-                            <InputLabel>云盘选择</InputLabel>
-                            <Select
-                                value=""
-                                label="云盘选择"
-                            >
-                                <MenuItem value="google">Google Drive</MenuItem>
-                                <MenuItem value="onedrive">OneDrive</MenuItem>
-                                <MenuItem value="dropbox">Dropbox</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <Typography sx={{ flex: 1 }}>未配置云盘</Typography>
-                        <IconButton size="small">
-                            <EditIcon />
-                        </IconButton>
-                    </Box>
-                    <FormControlLabel control={<Checkbox />} label="同步到云端" />
-                    <Button variant="outlined" startIcon={<UploadFileIcon />}>
-                        导入本地配置
-                    </Button>
-                    <Button variant="outlined" startIcon={<GoogleIcon />}>
-                        同步谷歌密码管理器
-                    </Button>
-                </Stack>
+                <FormControl sx={{ mt: 2 }} fullWidth>
+                    <InputLabel>主题模式</InputLabel>
+                    <Select
+                        value={"light"}
+                        label="主题模式"
+                        onChange={(e) =>
+                        {
+                        }}
+                    >
+                        <MenuItem value="light">亮色模式</MenuItem>
+                        <MenuItem value="dark">暗色模式</MenuItem>
+                    </Select>
+                </FormControl>
+                <Button variant="outlined" sx={{ mt: 2 }} fullWidth startIcon={<UploadFileIcon />} onClick={() =>
+                {
+                    importLocalConfig(user.id).then(() =>
+                    {
+                        message.success('导入成功');
+                    });
+                }}>
+                    导入本地配置
+                </Button>
+                <Button variant="outlined" sx={{ mt: 2 }} fullWidth startIcon={<DownloadIcon />} onClick={() =>
+                {
+                    getPasswordList(user.id).then(passwordList =>
+                    {
+                        exportPasswordList(passwordList);
+                    });
+                }}>
+                    导出本地配置
+                </Button>
+                <Button variant="outlined" sx={{ mt: 2 }} fullWidth startIcon={<GoogleIcon />}>
+                    同步谷歌密码管理器
+                </Button>
             </Paper>
         </Box>
     )

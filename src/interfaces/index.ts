@@ -1,6 +1,7 @@
 export interface IPassword
 {
     id: string,
+    userId: string,
     userName: string,
     password: string,
     visibility: "public" | "private",
@@ -21,7 +22,10 @@ export interface IUser
     password: string;
     tokens: IToken[];
     role: Role;
+    systemConfig: ISystemConfig;
 }
+
+export type Language = "zh" | "en";
 
 export interface IToken
 {
@@ -35,3 +39,23 @@ export interface IToken
  * 角色
  */
 export type Role = "admin" | "user";
+
+export type CloudType = "google" | "onedrive" | "dropbox" | "cloudflare";
+
+export interface ISystemConfig
+{
+    language: Language;
+}
+
+export interface ISyncConfig
+{
+    cloudType: CloudType;
+    cloudflareConfig: CloudflareConfig;
+    autoSyncToCloud: boolean;
+}
+
+export type CloudflareConfig = {
+    accountId: string;
+    apiKey: string;
+    namespace: string;
+}   

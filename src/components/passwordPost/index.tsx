@@ -8,10 +8,12 @@ import { IPassword } from '../../interfaces';
 import { nanoid } from 'nanoid';
 import { addPassword, updatePassword } from "../../utils/net";
 import message from "../message";
+import { useUser } from "../../contexts/UserContext";
 
 const PasswordPost = ({ open, onClose, isEdit, data }: { open: boolean, onClose: () => void, isEdit: boolean, data?: IPassword }) =>
 {
     const formContext = useForm();
+    const { user } = useUser();
     const [passwordGenerate, setPasswordGenerate] = useState({
         needUpperCaseAndLowerCase: true,
         needSpecialChar: true,
@@ -41,6 +43,7 @@ const PasswordPost = ({ open, onClose, isEdit, data }: { open: boolean, onClose:
     {
         const password: IPassword = {
             id: isEdit ? data!.id : nanoid(),
+            userId: data?.userId || user.id,
             userName: formData.username,
             password: formData.password,
             domain: formData.domain,

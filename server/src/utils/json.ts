@@ -11,11 +11,24 @@ DefaultJSONMap.set(Config.userJsonFileName, JSON.stringify([
         name: "admin",
         password: "admin",
         role: "admin",
-        tokens: []
+        tokens: [],
+        systemConfig: {
+            language: "zh"
+        }
     }
 ]))
 
 DefaultJSONMap.set(Config.passwordJsonFileName, JSON.stringify([]))
+
+DefaultJSONMap.set(Config.syncConfigJsonFileName, JSON.stringify({
+    cloudType: "cloudflare",
+    cloudflareConfig: {
+        accountId: "",
+        apiKey: "",
+        namespace: ""
+    },
+    autoSyncToCloud: false
+}))
 
 function getDataFilePath(fileName: string): string
 {
@@ -31,20 +44,20 @@ function getDataFilePath(fileName: string): string
     return filePath;
 }
 
-function readJSONFile<T>(fileName: string): Promise<T[]>
+function readJSONFile<T>(fileName: string, defaultValue?: T): Promise<T>
 {
     const filePath = getDataFilePath(fileName);
-    return new Promise<T[]>((resolve, reject) =>
+    return new Promise<T>((resolve, reject) =>
     {
         fs.readFile(filePath, "utf-8", (err, data) =>
         {
             if (err) reject(err);
-            resolve(data ? JSON.parse(data) : []);
+            resolve(data ? JSON.parse(data) : defaultValue);
         });
     });
 }
 
-function writeJSONFile(fileName: string, data: any[]): Promise<boolean>
+function writeJSONFile(fileName: string, data: any): Promise<boolean>
 {
     const filePath = getDataFilePath(fileName);
     return new Promise<boolean>((resolve, reject) =>

@@ -1,14 +1,18 @@
+import { CloudflareConfig } from "src/utils/CloudFlareKV";
+
 export interface IPasswordAPI
 {
-    getAll(): Promise<IPassword[]>;
+    getAll(userId: string): Promise<IPassword[]>;
     add(password: IPassword): Promise<boolean>;
     update(password: IPassword): Promise<boolean>;
+    updateList(passwordList: IPassword[]): Promise<boolean>;
     delete(id: string): Promise<boolean>;
 }
 
 export interface IPassword
 {
     id: string,
+    userId: string,
     userName: string,
     password: string,
     visibility: "public" | "private",
@@ -40,6 +44,15 @@ export interface IUser
     password: string;
     tokens: IToken[];
     role: Role;
+    systemConfig: ISystemConfig;
+    syncConfig: ISyncConfig;
+}
+
+export interface ISyncConfig
+{
+    cloudType: CloudType;
+    cloudflareConfig: CloudflareConfig;
+    autoSyncToCloud: boolean;
 }
 
 export interface IToken
@@ -50,8 +63,26 @@ export interface IToken
     deleteTime: number;
 }
 
+export type Language = "zh" | "en";
+
 /**
  * 角色
  */
 export type Role = "admin" | "user";
 
+export interface ISystemConfig
+{
+    language: Language;
+}
+
+
+export type CloudType = "google" | "onedrive" | "dropbox" | "cloudflare";
+
+export interface ICloudAPI
+{
+    cloudflareGet(key: string, config: CloudflareConfig): Promise<string>;
+    cloudflareSet(data: { key: string, value: string }[], config: CloudflareConfig): Promise<boolean>;
+    saveConfigToCloud(config: { cloudConfig: CloudflareConfig, type: CloudType }): Promise<boolean>;
+    getConfigLocal(): Promise<ISyncConfig>;
+    saveConfigLocal(config: ISyncConfig): Promise<boolean>;
+}

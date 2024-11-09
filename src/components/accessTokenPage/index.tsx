@@ -14,24 +14,22 @@ import
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import AddIcon from '@mui/icons-material/Add';
-import { useMemo, useState } from 'react';
 import { IToken } from '../../interfaces';
-import { CurrentUser } from '../../main';
 import { updateUser } from '../../utils/net';
 import message from '../message';
-
+import { useUser } from '../../contexts/UserContext';
 const AccessTokenPage = () =>
 {
-  const [tokens, setTokens] = useState<IToken[]>(CurrentUser.tokens);
+  const { user, setUser } = useUser();
 
   const onDeleteToken = (token: IToken) =>
   {
-    CurrentUser.tokens = CurrentUser.tokens.filter(t => t.token !== token.token);
-    updateUser(CurrentUser).then(() =>
+    const tokens = user.tokens.filter(t => t.token !== token.token);
+    const newUser = { ...user, tokens };
+    updateUser(newUser).then(() =>
     {
       message.success('删除成功');
-      setTokens(CurrentUser.tokens);
+      setUser(newUser);
     });
   };
 
@@ -63,7 +61,7 @@ const AccessTokenPage = () =>
             </TableRow>
           </TableHead>
           <TableBody>
-            {tokens.map((token) => (
+            {user.tokens.map((token) => (
               <TableRow key={token.token}>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>

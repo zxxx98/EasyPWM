@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import { Tab, Tabs } from '@mui/material';
 import { ReactNode, useState } from 'react';
 import PasswordPage from './pages/passwordPage';
-import { CurrentUser } from './main';
 import ConfigPage from './pages/configPage';
 import UserManagementPage from './pages/userManagementPage';
 import ExitPage from './pages/exitPage';

@@ -28,14 +28,15 @@ import { addUser, deleteUser, getUsers, updateUser } from '../../utils/net';
 import { nanoid } from 'nanoid';
 import { FieldValues, FormContainer, RadioButtonGroup, TextFieldElement } from 'react-hook-form-mui';
 import message from '../../components/message';
-import { CurrentUser } from '../../main';
+import { useUser } from '../../contexts/UserContext';
 
 const UserManagementPage = () =>
 {
   const [users, setUsers] = useState<IUser[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const isAdmin = CurrentUser.role === 'admin';
+  const { user } = useUser();
+  const isAdmin = user.role === 'admin';
   useEffect(() =>
   {
     getUsers().then(users => setUsers(users));
@@ -67,6 +68,16 @@ const UserManagementPage = () =>
       password: data.password,
       role: data.role as Role,
       tokens: [],
+      systemConfig: {
+        language: "zh",
+        cloudType: "cloudflare",
+        cloudflareConfig: {
+          accountId: "",
+          apiKey: "",
+          namespace: "",
+        },
+        autoSyncToCloud: false,
+      },
     };
     addUser(user).then(() =>
     {

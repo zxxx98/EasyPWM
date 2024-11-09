@@ -8,20 +8,13 @@ import { readLocalStorage, removeLocalStorage } from './utils/localStorage';
 import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/loginPage';
 import { getUserByToken, login } from './utils/net';
-import { IUser } from './interfaces';
-
-export const CurrentUser: IUser = {
-  id: '',
-  name: '',
-  password: '',
-  tokens: [],
-  role: "user"
-};
+import { UserProvider, useUser } from './contexts/UserContext';
 
 // 路由守卫组件
 const PrivateRoute = ({ children }: { children: React.ReactNode }) =>
 {
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const token = readLocalStorage('token', String); // 或者从其他存储位置获取token
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -31,7 +24,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) =>
     getUserByToken(token).then(user =>
     {
       if (user) {
-        Object.assign(CurrentUser, user);
+        setUser(user);
         navigate('/');
       } else {
         removeLocalStorage('token');
@@ -60,29 +53,31 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Routes>
-          {/* 登录页面路由 */}
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            }
-          />
+      <UserProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* 登录页面路由 */}
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              }
+            />
 
-          {/* 受保护的主应用路由 */}
-          <Route
-            path="/*"
-            element={
-              <PrivateRoute>
-                <App />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+            {/* 受保护的主应用路由 */}
+            <Route
+              path="/*"
+              element={
+                <PrivateRoute>
+                  <App />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </UserProvider>
     </ThemeProvider>
   </React.StrictMode>,
 );

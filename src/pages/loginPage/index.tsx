@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import message from '../../components/message';
 import { login } from '../../utils/net';
 import { IUser } from '../../interfaces';
-import { CurrentUser } from '../../main';
+import { useUser } from '../../contexts/UserContext';
 
 const LoginPage = () =>
 {
@@ -23,6 +23,7 @@ const LoginPage = () =>
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useUser();
     const handleSubmit = async (e: any) =>
     {
         e.preventDefault();
@@ -37,7 +38,7 @@ const LoginPage = () =>
                 if (rememberMe) {
                     writeLocalStorage('rememberedInfo', { username, password }, JSON.stringify);
                 }
-                Object.assign(CurrentUser, user);
+                setUser(user);
                 // 登录成功后跳转到首页
                 navigate('/');
             } else {

@@ -2,6 +2,8 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { ReactNode, useState } from "react";
 import AccessTokenPage from "../../components/accessTokenPage";
 import SystemConfigPage from "../../components/systemConfigPage";
+import SyncConfigPage from "../../components/syncConfigPage";
+import { useUser } from "../../contexts/UserContext";
 
 const TabConfigs: {
     label: string,
@@ -25,15 +27,22 @@ const TabConfigs: {
 
 const ConfigPage = () =>
 {
+    const { user } = useUser();
     const [value, setValue] = useState(0);
+    const tabConfigs = user.role === 'admin' ? [...TabConfigs, {
+        label: "同步配置",
+        value: 2,
+        icon: '',
+        component: <SyncConfigPage></SyncConfigPage>
+    }] : TabConfigs;
     return <Box>
         <Tabs value={value} onChange={(event, newValue) => setValue(newValue)}>
-            {TabConfigs.map((tabConfig) => (
+            {tabConfigs.map((tabConfig) => (
                 <Tab key={tabConfig.value} label={tabConfig.label} icon={tabConfig.icon} value={tabConfig.value} />
             ))}
         </Tabs>
         <Box>
-            {TabConfigs.find((tabConfig) => tabConfig.value === value)?.component}
+            {tabConfigs.find((tabConfig) => tabConfig.value === value)?.component}
         </Box>
     </Box>
 };

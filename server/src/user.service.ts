@@ -10,7 +10,7 @@ export class UserService implements IUserAPI
 
   async getUsers(): Promise<IUser[]>
   {
-    return await readJSONFile(Config.userJsonFileName);
+    return await readJSONFile(Config.userJsonFileName, []);
   }
 
   async getUser(name: string): Promise<IUser | undefined>

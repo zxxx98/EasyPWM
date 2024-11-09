@@ -10,6 +10,7 @@ import message from '../../components/message';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SearchIcon from '@mui/icons-material/Search';
+import { useUser } from '../../contexts/UserContext';
 const PasswordRow = ({ row, onDelete, setShowEdit }: { row: IPassword, onDelete: (id: string) => void, setShowEdit: (data: { open: boolean, isEdit: boolean, data?: IPassword }) => void }) =>
 {
     const [open, setOpen] = useState(false);
@@ -80,23 +81,24 @@ const PasswordRow = ({ row, onDelete, setShowEdit }: { row: IPassword, onDelete:
 
 const PasswordPage = () =>
 {
+    const { user } = useUser();
     const [passwordList, setPasswordList] = useState<IPassword[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchList, setSearchList] = useState<IPassword[]>([]);
     const [showEdit, setShowEdit] = useState<{ open: boolean, isEdit: boolean, data?: IPassword }>({ open: false, isEdit: false });
     useEffect(() =>
     {
-        getPasswordList().then(lists =>
+        getPasswordList(user.id).then(lists =>
         {
             setPasswordList(lists);
         });
-    }, []);
+    }, [user]);
 
     const onDelete = (id: string) =>
     {
         deletePassword(id).then(() =>
         {
-            getPasswordList().then(setPasswordList);
+            getPasswordList(user.id).then(setPasswordList);
         });
     }
 
@@ -163,7 +165,7 @@ const PasswordPage = () =>
             <PasswordPost open={showEdit.open} onClose={() =>
             {
                 setShowEdit({ open: false, isEdit: false });
-                getPasswordList().then(setPasswordList);
+                getPasswordList(user.id).then(setPasswordList);
             }} isEdit={showEdit.isEdit} data={showEdit.data} />
         </>
     )
